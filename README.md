@@ -73,6 +73,8 @@
     
     linux/mac link命令如下：
         ln -s /XXX/cube /YYY/openresty/apps/cube
+        
+        
   注意： /XXX 是 cube 的项目目录， /YYY 是您系统中 openresty 的安装目录
 ```    
 
