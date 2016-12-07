@@ -1,10 +1,9 @@
 -- Created by losyn on 12/7/16
 
---字符串分割函数
---传入字符串和分隔符，返回分割后的table
 local Exception = require("exception");
 local Cjson = require("cjson.safe");
 
+-- 字符串分割函数；传入字符串和分隔符，返回分割后的table
 local split = function(str, delimiter)
     if str == nil or str == '' or delimiter == nil then
         return {};
