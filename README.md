@@ -1,7 +1,7 @@
 ###项目配置搭建与部署启动
 #####注意： 
 * 如果安装配置过 openresty 则下面 1, 2, 3, 4 步骤直接跳过，非开发环境中 对 nginx.conf 中配置一定为 "on" lua_code_cache on; 
-* Dispatcher.lua, InitNgx.lua, InitWrk.lua, Routing.lua 放在项目的根路径且名字不能修改
+* InitNgx.lua, InitWrk.lua, RouterList.lua 放在项目的根路径且名字不能修改
 ##### 步骤
 1. 安装 openresty 中文官网 http://openresty.org/cn/
 
