@@ -9,47 +9,49 @@
 * 修改 /YYY/openresty/nginx/conf/nginx.conf 文件
 ```
     #user  openresty;
+    ### 根据项目配置
     worker_processes  1;
-    
-    #error_log  logs/error.log;
-    #error_log  logs/error.log  notice;
-    #error_log  logs/error.log  info;
-    
+
     #pid        logs/nginx.pid;
-    
+
     events {
         worker_connections  1024;
     }
-    
+
     http {
         include       mime.types;
         default_type  application/octet-stream;
-    	server_names_hash_bucket_size 128;
+        charset 	  utf-8;
+        server_names_hash_bucket_size 128;
         #log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
         #                  '$status $body_bytes_sent "$http_referer" '
         #                  '"$http_user_agent" "$http_x_forwarded_for"';
-    
-        #access_log  logs/access.log  main;
-    
+        error_log   off;
+        access_log  off;
+
         sendfile        on;
         #tcp_nopush     on;
-    
+
         #keepalive_timeout  0;
         keepalive_timeout  65;
-    
+
         gzip  on;
-        
-        ### enabled nginx error intercepter
+
         fastcgi_intercept_errors on;
-        
-    	### lua package path conf, product env cache must on 
-    	lua_package_path "$prefix/apps/?.lua;;";
-    	lua_package_cpath "$prefix/apps/?.so;;";
-    	lua_code_cache off;
-    
-    	# To add your start app service used conf 
-    	# include ../apps/default/default.conf;
-    	# include ../apps/cube/resources/nginx.conf;
+
+        ### lua package path conf, product env cache must on 
+        lua_package_path "$prefix/apps/?.lua;$prefix/resty/?.lua;;";
+        lua_package_cpath "$prefix/apps/?.so;$prefix/resty/?.so;;";
+
+        lua_code_cache off;
+
+        init_by_lua_file          resty/init.nginx.lua;
+        init_worker_by_lua_file   resty/init.worker.lua;
+
+        ### To add your start app service used conf 
+        include ../apps/default/default.conf;
+
+        include ../apps/cube/resources/nginx.conf;
     }
 ```    
 3. 在 /YYY/openresty/nginx 目录下新建目录 apps, resty
@@ -71,4 +73,4 @@
 ```
 7. 直接启动 /YYY/openresty/nginx/sbin 运行项目， 项目的停止，重启等与操作Nginx一样
 
-8. 新添加请求路由只需要修改 ×××/Routing.lua 文件
+8. 新添加请求路由只需要修改 ×××/RouterList.lua 文件
