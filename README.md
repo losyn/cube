@@ -7,7 +7,7 @@
 
 2. 配置 openresty 
 * 修改 /YYY/openresty/nginx/conf/nginx.conf 文件
->
+```
     #user  openresty;
     worker_processes  1;
     
@@ -49,9 +49,9 @@
     
     	# To add your start app service used conf 
     	# include ../apps/default/default.conf;
-    	# include ../apps/performance/resources/nginx.conf;
+    	# include ../apps/cube/resources/nginx.conf;
     }
-    
+```    
 3. 在 /YYY/openresty/nginx 目录下新建目录 apps, resty
 
 4. 将项目 /×××/etc/resty 目录中的所有文件拷贝到上面创建的 resty 目录中并且配置好 environment.lua 中 root 对应的 openresty apps 目录，及环境变量 env
@@ -59,15 +59,15 @@
 5. 将整个项目代码link到 openresty目录下的 apps 目录中
 > 
     windows link命令如下：
-        mklink /j /XXX/performance /YYY/openresty/apps/performance
+        mklink /j /XXX/cube /YYY/openresty/apps/cube
     
     linux/mac link命令如下：
-        ln -s /XXX/performance /YYY/openresty/apps/performance
-    注意： /XXX 是 performance 的项目目录， /YYY 是您系统中 openresty 的安装目录
+        ln -s /XXX/cube /YYY/openresty/apps/cube
+    注意： /XXX 是 cube 的项目目录， /YYY 是您系统中 openresty 的安装目录
     
 6. 修改 nginx.conf 配置 添加自己项目需要的conf文件
 >
-    include ../apps/performance/resources/default.conf;
+    include ../apps/cube/resources/default.conf;
 
 7. 直接启动 /YYY/openresty/nginx/sbin 运行项目， 项目的停止，重启等与操作Nginx一样
 
