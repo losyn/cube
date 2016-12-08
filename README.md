@@ -43,7 +43,9 @@
 
 1. download openresty 中文官网 http://openresty.org/cn/
 
-2. 配置 openresty 
+2. 在 /YYY/openresty/nginx 目录下新建目录 apps
+
+3. 配置 openresty 
 
 * 修改 /YYY/openresty/nginx/conf/nginx.conf 文件
 
@@ -91,9 +93,7 @@
         ### To add your start app service used conf 
         # include ../apps/example/resources/nginx.conf;
     }
-```    
-
-3. 在 /YYY/openresty/nginx 目录下新建目录 apps
+```  
 
 ##### 安装 Cube
 
@@ -114,16 +114,14 @@
     linux/mac link命令如下：
         ln -s /XXX/example /YYY/openresty/apps/example
         
+    修改 openresty 安装目录中对应 nginx 的配置添加自己项目需要的 conf 文件如下
+    
+        include ../apps/example/resources/nginx.conf;
         
   注意： /XXX 是 example 的项目目录， /YYY 是您系统中 openresty 的安装目录
+  
 ```    
 
-2. 修改 nginx.conf 配置 添加自己项目需要的conf文件
+2. 直接启动 /YYY/openresty/nginx/sbin 运行项目， 项目的停止，重启等与操作Nginx一样
 
-```
-    include ../apps/example/resources/nginx.conf;
-```
-
-3. 直接启动 /YYY/openresty/nginx/sbin 运行项目， 项目的停止，重启等与操作Nginx一样
-
-4. 新添加请求路由只需要修改 ×××/RouterList.lua 文件中的路由及添加自己的业务代码
+3. 新添加请求路由只需要修改 ×××/RouterList.lua 文件中的路由及添加自己的业务代码
