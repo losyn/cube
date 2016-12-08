@@ -2,7 +2,7 @@
 -- init_by_lua_file invoke
 
 return {
-    initial = function()
+    initial = function(ngx)
         ngx.log(ngx.INFO, "performance ngx initial.....");
     end
 }

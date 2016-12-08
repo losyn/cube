@@ -2,7 +2,7 @@
 -- init_worker_by_lua_file invok
 
 return {
-    initial = function()
+    initial = function(ngx)
         ngx.log(ngx.INFO, "performance, worker initial.....");
     end
 }

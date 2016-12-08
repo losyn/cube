@@ -42,6 +42,6 @@ luac.out
 *.hex
 
 .idea
-performance.iml
 out
-logs/*.log
+example/logs/*.log
+cube.iml

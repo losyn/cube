@@ -1,21 +1,10 @@
 -- Created by losyn on 12/2/16
 
 local Cjson = require("cjson.safe");
-local Exception = require("exception");
-
-local split = function(str, delimiter)
-    local result = {};
-    if str == nil or str == '' or delimiter == nil then
-        return result;
-    end
-    for match in (str .. delimiter):gmatch("(.-)" .. delimiter) do
-        table.insert(result, match)
-    end
-    return result
-end
+local Safe = require("safe");
 
 local response = function(status)
-    local ah = split(ngx.var.ajax_header, "=");
+    local ah = string.split(ngx.var.ajax_header, "=");
     ngx.log(ngx.INFO, "ajax header: ", Cjson.encode(ah));
     if nil == ah[1] or nil == ah[2] then
         ah[1] = "X-Requested-With";
@@ -35,14 +24,15 @@ end
 -- invok routing ctrl action
 local invokCtrlAction = function(route)
     ngx.header["Content-Type"] = route.dt;
-    local ret, Ctrl = Exception.try(require, route.ctrl);
-    if not ret then
-        ngx.log(ngx.ERR, "request ctrl not found: " .. route.ctrl);
+    ngx.log(ngx.ERR, ngx.var.project .. "." .. route.ctrl);
+    local ret, Ctrl = Safe.import(ngx.var.project .. "." .. route.ctrl);
+    if not ret or not Ctrl then
+        ngx.log(ngx.ERR, "request ctrl not found: " .. route.ctrl, Cjson.encode(Ctrl));
         response(ngx.HTTP_INTERNAL_SERVER_ERROR);
     end
-    local rs, msg = Exception.try(Ctrl[route.action]);
+    local rs, msg = Safe.invoke(Ctrl[route.action], ngx);
     if not rs then
-        ngx.log(ngx.ERR, "exec request ctrl action error, msg: " .. Cjson.encode(msg));
+        ngx.log(ngx.ERR, "exec request ctrl action error, msg: ", Cjson.encode(msg));
         response(ngx.HTTP_INTERNAL_SERVER_ERROR);
     end
 end
@@ -89,9 +79,9 @@ local dispatcher = function()
     local path = string.sub(ngx.var.uri, 1, sInx - 1);
     ngx.log(ngx.INFO, "request path: " .. path .. ", action: " .. action);
 
-    local ret, Routing = Exception.try(require, ngx.var.router_list);
+    local ret, Routing = Safe.import(ngx.var.project .. ".resources.RouterList");
     if not ret or not Routing then
-        ngx.log(ngx.ERR, "router list conf error, $router_list");
+        ngx.log(ngx.ERR, "router list conf error, file: " .. ngx.var.project .. ".resources.RouterList");
         response(ngx.HTTP_INTERNAL_SERVER_ERROR);
         return;
     end

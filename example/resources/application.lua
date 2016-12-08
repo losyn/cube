@@ -3,6 +3,7 @@ local Environment = require("environment");
 
 local conf = {
     dev = {
+        viewCache = false;
         mysqlUrl = "xxxxx"
     },
     test = {},
