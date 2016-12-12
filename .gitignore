@@ -41,7 +41,7 @@ luac.out
 *.x86_64
 *.hex
 
-
+cube/example/logs/*.log
 .idea
 out
 cube.iml
