@@ -47,7 +47,7 @@
 
 3. 配置 openresty 
 
-* 修改 /YYY/openresty/nginx/conf/nginx.conf 文件
+* 修改 /YYY/openresty/nginx/conf/nginx.conf 文件, 非开发环境请配置 lua_code_cache on;
 
 ```
     #user  openresty;
@@ -84,7 +84,8 @@
         ### lua package path conf, product env cache must on 
         lua_package_path "$prefix/apps/?.lua;$prefix/resty/?.lua;;";
         lua_package_cpath "$prefix/apps/?.so;$prefix/resty/?.so;;";
-
+        
+        ### when environment.env != dev you must set it's on
         lua_code_cache off;
 
         init_by_lua_file          resty/init.nginx.lua;
@@ -95,13 +96,15 @@
     }
 ```  
 
-##### 安装 Cube
+##### 安装 cube
 
 1. 源码安装 github 地址： https://github.com/wtclosyn/cube
  
 2. 将 1 中下载的 resty 目录复制到 /YYY/openresty/nginx 目录下，保证与 apps 目录同级
 
 3. 修改 environment.lua 中的内容符合你自己的项目
+
+###### 注意： cube 扩展了一个全局方法 loading，实现以项目相对路径加载模块（等同于 require 的功能如 loading("main.service.UserService")）
 
 ##### Cube example 项目
 

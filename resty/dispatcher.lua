@@ -1,10 +1,11 @@
 -- Created by losyn on 12/2/16
 
+local Functionality = require("functionality")
 local Cjson = require("cjson.safe");
 local Safe = require("safe");
 
 local response = function(status)
-    local ah = string.split(ngx.var.ajax_header, "=");
+    local ah = Functionality.split(ngx.var.ajax_header, "=");
     ngx.log(ngx.INFO, "ajax header: ", Cjson.encode(ah));
     if nil == ah[1] or nil == ah[2] then
         ah[1] = "X-Requested-With";
@@ -17,7 +18,7 @@ local response = function(status)
         ngx.say(Cjson.encode({result = false, code = status}));
     else
         ngx.header["Content-Type"] = "text/html";
-        ngx.exit(status);
+        return ngx.exit(status);
     end
 end
 

@@ -1,10 +1,11 @@
 -- Created by losyn on 12/7/16
 
+local Functionality = require("functionality")
 local Cjson = require("cjson.safe");
 local Safe = require("safe");
 
 local firewall = function()
-    local acl = string.split(ngx.var.acc_ctrl_ls, ",");
+    local acl = Functionality.split(ngx.var.acc_ctrl_ls, ",");
     ngx.log(ngx.INFO, "request uri acl: ", Cjson.encode(acl));
     for _, v in ipairs(acl) do
         local ret, Ctrl = Safe.import(ngx.var.project .. "." .. v);

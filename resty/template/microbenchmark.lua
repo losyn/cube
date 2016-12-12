@@ -1,4 +1,4 @@
-local template = require "resty.template"
+local template = require "template"
 
 local ok, new_tab = pcall(require, "table.new")
 if not ok then
