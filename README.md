@@ -43,7 +43,7 @@
     
     local ok, res = MySqlOperations:invoke(function(db, overt, params)
         ngx.log(ngx.ERR, "invoke params", Cjson.encode(params))
-        return = MySqlOperations:query(db, overt, "UserSql:sql", params)
+        return MySqlOperations:query(db, overt, "UserSql:sql", params)
     end, {username = "root", size = 10})
     ngx.say(Cjson.encode(res))
 ```
