@@ -45,3 +45,4 @@ cube/example/logs/*.log
 .idea
 out
 cube.iml
+example/logs/
