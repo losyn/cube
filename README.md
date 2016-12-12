@@ -35,7 +35,18 @@
         InitWrk.lua
 ```
 
-更多功能敬请期待.....
+6. 支持 mysql 简单实现了 mybatis 的功能
+
+```
+    local ok, res = MySqlOperations:exec("UserSql:sql", {username = "root", size = 10})
+    ngx.say(Cjson.encode(res))
+    
+    local ok, res = MySqlOperations:invoke(function(db, overt, params)
+        ngx.log(ngx.ERR, "invoke params", Cjson.encode(params))
+        return = MySqlOperations:query(db, overt, "UserSql:sql", params)
+    end, {username = "root", size = 10})
+    ngx.say(Cjson.encode(res))
+```
 
 #### cube 配置使用
 
