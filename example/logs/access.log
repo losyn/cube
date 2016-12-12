@@ -1,0 +1,2 @@
+127.0.0.1 - - [12/Dec/2016:20:51:59 +0800] "GET /!index HTTP/1.1" 200 767 "-" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/53.0.2785.143 Chrome/53.0.2785.143 Safari/537.36"
+127.0.0.1 - - [12/Dec/2016:20:51:59 +0800] "GET /favicon.ico HTTP/1.1" 200 133 "http://localhost:33333/!index" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/53.0.2785.143 Chrome/53.0.2785.143 Safari/537.36"

@@ -24,7 +24,13 @@ return {
             return ret, res;
         end, {username = "root", size = 10})
         ngx.say(Cjson.encode(res))
-
+        ngx.say("----------------------------------------------------------------------")
+        local ok, res = MySqlOperations:invoke(function(db, overt, params)
+            ngx.log(ngx.ERR, "invoke params", Cjson.encode(params))
+            local ret, res = MySqlOperations:query(db, overt, "UserSql:sql", params)
+            return ret, res;
+        end, {username = "root", size = 10}, true)
+        ngx.say(Cjson.encode(res))
         --[[Template.render("index.html", {
             title = "Cube Example";
             message = "Hello Cube Example!"

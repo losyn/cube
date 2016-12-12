@@ -126,6 +126,7 @@ local doExecute = function(func, f, overt, flag)
     end
 
     if overt then
+        ngx.log(ngx.INFO, "start transaction")
         local rs, error, code, sqlstate = db:query("START  TRANSACTION")
         if not rs then
             ngx.log(ngx.ERR, "failed to start transaction, error: ", error, ", code: ", code, ", sqlstate: ", sqlstate)
@@ -136,6 +137,7 @@ local doExecute = function(func, f, overt, flag)
     local ret, res = func(db)
 
     if overt then
+        ngx.log(ngx.INFO, "transaction commit")
         local rs, error, code, sqlstate = db:query("COMMIT")
         if not rs then
             ngx.log(ngx.ERR, "failed to commit transaction, error: ", error, ", code: ", code, ", sqlstate: ", sqlstate)
@@ -183,22 +185,11 @@ function MySqlOperations:exec(queryId, params, overt)
     end, nil, overt, false);
 end
 
--- 代理执行 DB 操作
-function MySqlOperations:invoke(func, params)
-    local okF, db = invokeReturnDB(func, true)
-    if not okF then
-        ngx.log(ngx.ERR, "invokeReturnDB error: ", db);
-        return false, db
-    end
-    local ret, res = func(db, false, params)
-    return dbResponse(ret, res)
-end
-
--- 代理执行 DB 显示事务操作
-function MySqlOperations:correct(func, params)
+-- 代理执行 DB SQL, overt 是否显示开启事务
+function MySqlOperations:invoke(func, params, overt)
     return doExecute(function(db)
         return func(db, true, params)
-    end, func, true, false);
+    end, func, overt, false);
 end
 
 return MySqlOperations
