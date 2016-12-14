@@ -35,7 +35,7 @@
         InitWrk.lua
 ```
 
-6. 支持 mysql 简单实现了 mybatis 的功能
+6. 支持 mysql 简单实现了 mybatis 的功能 mysqloperations.lua
 
 ```
     local ok, res = MySqlOperations:exec("UserSql:sql", {username = "root", size = 10})
@@ -47,6 +47,8 @@
     end, {username = "root", size = 10})
     ngx.say(Cjson.encode(res))
 ```
+
+7. 支持 redis 连接池，对 redis 做了封装 redisoperations.lua
 
 #### cube 配置使用
 

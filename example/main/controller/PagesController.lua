@@ -29,16 +29,12 @@ return {
             ngx.log(ngx.ERR, Cjson.encode({a = 1, b = 2}))
         end)
         RedisOperations.subscribe("channel", function(rs)
-            ngx.log(ngx.ERR, "subscribe channel callback")
             ngx.log(ngx.ERR, Cjson.encode(rs))
         end, 3)
         ngx.sleep(3)
         ngx.say("sleep to publish")
         ngx.log(ngx.ERR, "publish channel value hello")
         RedisOperations.publish("channel", "hello")
-        ngx.sleep(3)
-        ngx.say("unsubscribe channel")
-        ngx.log(ngx.ERR, RedisOperations.unsubscribe("channel"))
         --[[Template.render("index.html", {
             title = "Cube Example";
             message = "Hello Cube Example!"

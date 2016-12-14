@@ -2,6 +2,7 @@
 
 local Redis = require("resty.redis")
 local Cjosn = require("cjson.safe")
+local Safe = require("safe")
 local Functionality = require("functionality")
 local Nameservice = require("nameservice")
 
@@ -161,7 +162,10 @@ local doSubscribe = function(channel, func, valid)
                 break
             end
             if res then
-                func(res)
+                res, error = Safe.invoke(func, res)
+                if not res then
+                    ngx.log(ngx.ERR, "subscribe channel handle read reply error: ", error)
+                end
             end
         else
             ngx.log(ngx.INFO, "exec unsubscribe redis channel: " .. channel)
