@@ -12,6 +12,11 @@ local conf = {
             user = "root",
             password = "root",
             show_sql = true
+        },
+        redisc = {
+            host = "127.0.0.1",
+            port = 6379,
+            database = 0
         }
     },
     test = {
