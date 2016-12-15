@@ -6,6 +6,7 @@ local Functionality = require("functionality")
 local Environment = require("environment")
 local Safe = require("safe")
 
+-- apply for caching 200 items
 local CacheStorage, err = Lrucache.new(200)
 if not CacheStorage then
     ngx.log(ngx.ERR, "create a new chche storage error: ", err)
@@ -62,14 +63,12 @@ local getFromResolver = function(hostname)
     return false, nil
 end
 
-local getAddress = function(hostname)
-    if isAddress(hostname) then
-        return true, hostname
-    end
-    -- cache 300s
-    return Safe.effect(hostname, getAddrFromCache, getFromResolver, setAddr2Cache, 300)
-end
-
 return {
-    address = getAddress
+    address = function(hostname)
+        if isAddress(hostname) then
+            return true, hostname
+        end
+        -- cache 300s
+        return Safe.effect(hostname, getAddrFromCache, getFromResolver, setAddr2Cache, 300)
+    end
 }
