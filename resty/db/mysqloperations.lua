@@ -67,7 +67,12 @@ local function connect()
     end
 
     local options = getOptions();
-    options.host = Nameservice.address(options.host)
+    local ok, address = Nameservice.address(options.host)
+    if not ok then
+        ngx.log(ngx.ERR, "failed to resolv domain to address")
+        return nil
+    end
+    options.host = address
 
     db:set_timeout(options.timeout);
 

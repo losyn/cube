@@ -23,18 +23,6 @@ return {
         --ngx.say(fun({username = "root"}))
         local ok, res = RedisOperations.get("dog")
         ngx.say(Cjson.encode({ok, res}))
-        --ngx.say(Cjson.encode(fun()))
-        ngx.timer.at(0, function(p)
-            if p then return end
-            ngx.log(ngx.ERR, Cjson.encode({a = 1, b = 2}))
-        end)
-        RedisOperations.subscribe("channel", function(rs)
-            ngx.log(ngx.ERR, Cjson.encode(rs))
-        end, 3)
-        ngx.sleep(3)
-        ngx.say("sleep to publish")
-        ngx.log(ngx.ERR, "publish channel value hello")
-        RedisOperations.publish("channel", "hello")
         --[[Template.render("index.html", {
             title = "Cube Example";
             message = "Hello Cube Example!"

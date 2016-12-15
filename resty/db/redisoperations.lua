@@ -45,11 +45,16 @@ end
 local doConnect = function()
     local db, msg = Redis:new()
     if not db then
-        ngx.log(ngx.ERR, "failed to mysql socket: ", msg)
+        ngx.log(ngx.ERR, "failed to redis socket: ", msg)
         return nil
     end
     local options = getOptions()
-    options.host = Nameservice.address(options.host)
+    local ok, address = Nameservice.address(options.host)
+    if not ok then
+        ngx.log(ngx.ERR, "failed to resolv domain to address")
+        return nil
+    end
+    options.host = address
 
     db:set_timeout(options.timeout)
     local ret, error = db:connect(options.host, options.port)

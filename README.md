@@ -66,46 +66,46 @@
     #user  openresty;
     ### 根据项目配置
     worker_processes  1;
-
+    
     #pid        logs/nginx.pid;
-
+    
     events {
         worker_connections  1024;
     }
-
+    
     http {
         include       mime.types;
         default_type  application/octet-stream;
-        charset 	  utf-8;
-        server_names_hash_bucket_size 128;
+    	charset 	  utf-8;
+    	server_names_hash_bucket_size 128;
         #log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
         #                  '$status $body_bytes_sent "$http_referer" '
         #                  '"$http_user_agent" "$http_x_forwarded_for"';
-        error_log   off;
-        access_log  off;
-
+    	error_log   off;
+    	access_log  off;
+    
         sendfile        on;
         #tcp_nopush     on;
-
+    
         #keepalive_timeout  0;
         keepalive_timeout  65;
-
+    
         gzip  on;
-
-        fastcgi_intercept_errors on;
-
-        ### lua package path conf, product env cache must on 
-        lua_package_path "$prefix/apps/?.lua;$prefix/resty/?.lua;;";
+    
+    	fastcgi_intercept_errors on;
+    
+    	### lua package path conf, product env cache must on 
+    	lua_package_path "$prefix/apps/?.lua;$prefix/resty/?.lua;;";
         lua_package_cpath "$prefix/apps/?.so;$prefix/resty/?.so;;";
-        
-        ### when environment.env != dev you must set it's on
-        lua_code_cache off;
-
-        init_by_lua_file          resty/init.nginx.lua;
-        init_worker_by_lua_file   resty/init.worker.lua;
-
-        ### To add your start app service used conf 
-        # include ../apps/example/resources/nginx.conf;
+    
+    	lua_code_cache off;
+    	lua_shared_dict cube_cache_lock 1m;
+    	
+    	init_by_lua_file          resty/init.nginx.lua;
+    	init_worker_by_lua_file   resty/init.worker.lua;
+    
+    	### To add your start app service used conf 
+    	include ../apps/example/resources/nginx.conf;
     }
 ```  
 

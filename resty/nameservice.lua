@@ -4,25 +4,33 @@ local Lrucache = require("resty.lrucache")
 local Resolver = require("resty.dns.resolver")
 local Functionality = require("functionality")
 local Environment = require("environment")
+local Safe = require("safe")
 
-local CacheStorage = Lrucache.new(200)
+local CacheStorage, err = Lrucache.new(200)
+if not CacheStorage then
+    ngx.log(ngx.ERR, "create a new chche storage error: ", err)
+end
 
 local isAddress = function(hostname)
     return ngx.re.find(hostname, [[\d+?\.\d+?\.\d+?\.\d+$]], "jo")
 end
 
-local getAddress = function(hostname)
-    if isAddress(hostname) then
-        return hostname, hostname
-    end
-
+local getAddrFromCache = function(hostname)
     local addr = CacheStorage:get(hostname)
     if addr then
-        return addr, hostname
+        return true, addr
     end
+    return false, nil
+end
 
+local setAddr2Cache = function(hostname, value, expire)
+    return Safe.invoke(Lrucache.set, CacheStorage, hostname, value, expire)
+end
+
+local getFromResolver = function(hostname)
     if Functionality.isEmpty(Environment.DNS) then
-        return nil, "can not find dns resolv service"
+        ngx.log(ngx.ERR, "can not find dns resolv service")
+        return false, nil
     end
 
     local r, error = Resolver:new({
@@ -35,26 +43,31 @@ local getAddress = function(hostname)
 
     if not r then
         ngx.log(ngx.ERR, "hostname: " .. hostname .. " can not resolv address, error: ", error)
-        return nil, "hostname can not resolv address"
+        return false, nil
     end
 
     local answers, err = r:query(hostname, { qtype = r.TYPE_A })
 
     if not answers or answers.errcode then
         ngx.log(ngx.ERR, "hostname: " .. hostname .. " can not resolv address, errcode: ", answers.errcode)
-        return nil, "hostname can not resolv address"
+        return false, nil
     end
 
     for _, ans in ipairs(answers) do
         if ans.address then
-            -- cache 300s
-            CacheStorage:set(hostname, ans.address, 300)
-            return ans.address, hostname
+            return true, ans.address
         end
     end
-
     ngx.log(ngx.ERR, "hostname: " .. hostname .. " can not resolv address, error: ", err)
-    return nil, "hostname can not resolv address"
+    return false, nil
+end
+
+local getAddress = function(hostname)
+    if isAddress(hostname) then
+        return true, hostname
+    end
+    -- cache 300s
+    return Safe.effect(hostname, getAddrFromCache, getFromResolver, setAddr2Cache, 300)
 end
 
 return {
