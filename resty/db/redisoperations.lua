@@ -181,6 +181,21 @@ local doSubscribe = function(channel, func, valid)
     return false
 end
 
+local handleSubscribe
+handleSubscribe = function(premature, channel, func, retry, valid)
+    if premature then return end
+    SP_CACHE[channel] = true
+    local ret, res = Safe.invoke(doSubscribe, channel, func, valid)
+    if not ret or not res then
+        local ok, error = ngx.timer.at(retry, handleSubscribe, channel, func, retry, valid)
+        if not ok then
+            ngx.log(ngx.ERR, "failed to create timer resubscribe channel: " .. channel, ", error: ", error)
+        else
+            ngx.log(ngx.ALERT, "listen channel: " .. channel .. " error about " .. retry .. "s will resubscribe")
+        end
+    end
+end
+
 for i = 1, #cmds do
     local cmd = cmds[i]
 
@@ -218,25 +233,18 @@ RedisOperations.array2Hash = function(array)
 end
 
 RedisOperations.subscribe = function(channel, func, retry)
-    local ok, error = ngx.timer.at(0, function(p, cn, fun, rt, valid)
-        if p then return end
-        SP_CACHE[channel] = true
-        repeat
-            local ds = doSubscribe(cn, fun, valid)
-            if not ds then
-                ngx.sleep(rt)
-                ngx.log(ngx.ALERT, "listen channel: " .. cn .. " error about " .. rt .. "s will resubscribe")
-            end
-        until ds
-    end, channel, func, retry or 3, validation)
-    if not ok then
-        ngx.log(ngx.ERR, "failed to create timer subscribe channel: " .. channel, ", error: ", error)
+    -- bind at ngx last worker
+    if (ngx.worker.count() - 1) == ngx.worker.id() then
+        local ok, error = ngx.timer.at(0, handleSubscribe, channel, func, retry or 3, validation)
+        if not ok then
+            ngx.log(ngx.ERR, "failed to create timer subscribe channel: " .. channel, ", error: ", error)
+        end
     end
 end
 
 RedisOperations.unsubscribe = function(channel)
     SP_CACHE[channel] = false
-    return  "submit unsub channel = " .. channel
+    return "submit unsub channel = " .. channel
 end
 
 RedisOperations.publish = function(channel, value)
