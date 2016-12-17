@@ -56,15 +56,27 @@ local initResolv = function()
     return dns
 end
 
+local initRouter = function(p)
+    local rs, Conf = Safe.import(p .. ".resources.application");
+    if rs and Conf.routerList then
+        local rs, Routing = Safe.import(p .. "." .. Conf.routerList)
+        if rs then
+            Routing.aliasList = duplicateUriList(Routing)
+        end
+    else
+        ngx.log(ngx.ALERT, "cube can not find your application.lua or can not find routerList project: ", p)
+    end
+end
 
 local init = function()
+    -- init dns resolv
     Environment.DNS = initResolv()
+
     for p in Lfs.dir(Environment.root) do
         if p ~= "." and p ~= ".." and "directory" == Lfs.attributes(Environment.root .. p).mode then
             ngx.log(ngx.INFO, Environment.root .. p);
-
-            local rs1, Routing = Safe.import(p .. ".resources.RouterList");
-            if rs1 then Routing.aliasList = duplicateUriList(Routing) end
+            -- init app router list
+            initRouter(p)
 
             local rs, InitNgx = Safe.import(p .. ".InitNgx");
             if rs then InitNgx.initial(ngx) end

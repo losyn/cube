@@ -1,7 +1,7 @@
 -- Created by losyn on 12/8/16
 
 local Lock = require "resty.lock"
-
+local cacheNgx = "cube_cache_lock"
 local unlock = function(lock)
     local ok, error = lock:unlock()
     if not ok then
@@ -33,7 +33,7 @@ return {
         local ok, res = lightF(key)
         if not ok then
             -- cache miss Locked
-            local lock = Lock:new("cube_cache_lock")
+            local lock = Lock:new(cacheNgx)
             ok, res = lock:lock(key)
             if not ok then
                 ngx.log(ngx.ERR, "failed to acquire the lock: ", res)

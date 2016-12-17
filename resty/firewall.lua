@@ -4,10 +4,11 @@ local Functionality = require("functionality")
 local Cjson = require("cjson.safe");
 local Safe = require("safe");
 
+local Conf = loading("resources.application");
+
 local firewall = function()
-    local acl = Functionality.split(ngx.var.acc_ctrl_ls, ",");
-    ngx.log(ngx.INFO, "request uri acl: ", Cjson.encode(acl));
-    for _, v in ipairs(acl) do
+    local acls = Conf.acls or {}
+    for _, v in ipairs(acls) do
         local ret, Ctrl = Safe.import(ngx.var.project .. "." .. v);
         if not ret or not Ctrl then
             ngx.log(ngx.ERR, "acl conf not found, " .. v);

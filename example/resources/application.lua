@@ -1,10 +1,18 @@
 -- Created by losyn on 12/5/16
 local Environment = require("environment");
+local Functionality = require("functionality")
 
 -- conf = {dev = {}, test ={}, uat = {}, prod = {}}
 local conf = {
+    common = {
+        rootAction = "/!index",
+        routerList = "main.RouterList",
+        ajaxHeader = "X-Requested-With=XMLHttpRequest",
+        acls = {"main.common.Authentication"}
+    },
     dev = {
-        viewCache = false;
+        enableT = true,
+        viewCache = false,
         mysqlc = {
             host = "localhost",
             port = 3306,
@@ -23,6 +31,7 @@ local conf = {
         }
     },
     test = {
+        enableT = false,
         viewCache = true;
         mysqlc = {
             host = "localhost",
@@ -33,6 +42,7 @@ local conf = {
         }
     },
     uat = {
+        enableT = false,
         viewCache = true;
         mysqlc = {
             host = "localhost",
@@ -43,6 +53,7 @@ local conf = {
         }
     },
     prod = {
+        enableT = false,
         viewCache = true;
         mysqlc = {
             host = "localhost",
@@ -54,4 +65,4 @@ local conf = {
     }
 }
 
-return conf[Environment.env];
+return Functionality.defaults(conf.common, conf[Environment.env]);
