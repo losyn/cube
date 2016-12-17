@@ -50,10 +50,10 @@ local timeF = function(time)
     return string.format("%05d", (ngx.now() - time) * 1000)
 end
 
-local stasticF = function(all, success, failures, summary)
+local stasticF = function(num1, num2, num3, summary)
     return summary
-            and "modules: " .. all .. " methods: " .. success .. " success: " .. failures .. " failures: " .. (success - failures)
-            or "all: " .. all .. "  success: " .. success .. "  failures: " .. failures
+            and "modules: " .. num1 .. " methods: " .. num2 .. " success: " .. num3 .. " failures: " .. (num2 - num3)
+            or "all: " .. num1 .. "  success: " .. num2 .. "  failures: " .. num3
 end
 
 local startLog = function(title)
@@ -146,9 +146,8 @@ local clearCount = function()
     fSuccess = 0
 end
 
-local run = function(path, mou, md, count)
+local run = function(path, mou, md)
     clearCount()
-    count = count or 1
     local target = path or "/test"
     if not Functionality.fileExists(TEST_ROOT .. target) then
         return log(C.red, message(default, titleF(path, true), "can not find the test path"))
@@ -174,7 +173,7 @@ _M.log = function(msg)
 end
 
 _M.run = function(path, mou, md)
-    return run(path, mou, md, 1)
+    return run(path, mou, md)
 end
 
 return _M
