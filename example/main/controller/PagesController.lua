@@ -3,8 +3,8 @@
 local Cjson = require("cjson.safe");
 local Functionality = require("functionality")
 local Template = require("template");
-local MySqlOperations = require("db.mysqloperations")
-local RedisOperations = require("db.redisoperations")
+local MySqlOperations = require("provider.mysqloperations")
+local RedisOperations = require("provider.redisoperations")
 
 local Application = loading("resources.application")
 local Conf = loading("resources.application");

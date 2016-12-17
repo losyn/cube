@@ -44,7 +44,7 @@ end
 local stasticF = function(num1, num2, num3, summary)
     return summary
             and "modules: " .. num1 .. " methods: " .. num2 .. " success: " .. num3 .. " failures: " .. (num2 - num3)
-            or "all: " .. num1 .. "  success: " .. num2 .. "  failures: " .. num3
+            or "methods: " .. num1 .. "  success: " .. num2 .. "  failures: " .. num3
 end
 
 local startLog = function(title)
