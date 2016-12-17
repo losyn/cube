@@ -5,20 +5,11 @@ local Functionality = require("functionality")
 local Safe = require("safe")
 local Lfs = require("lfs")
 
--- cube lock cache
 local TEST_ROOT = Environment.root .. ngx.var.project
 
 local _M = { _VERSION = '0.01' }
 
--- 字颜色: 30--39
--- 30: 黑
--- 31: 红
--- 32: 绿
--- 33: 黄
--- 34: 蓝
--- 35: 紫
--- 36: 深绿
--- 37: 白色
+-- 字颜色: 30--37; 30: 黑, 31: 红, 32: 绿, 33: 黄, 34: 蓝, 35: 紫, 36: 深绿, 37: 白色
 local C = { black = 30, green = 32, red = 31, yellow = 33, blue = 34, purple = 35, darkGreen = 36, white = 37 }
 local default = "00000"
 
@@ -67,6 +58,7 @@ end
 local fCount = 0
 local fSuccess = 0
 local doExec = function(init, name, func)
+    --noinspection UnusedDef
     fCount = fCount + 1
     local start = ngx.now()
     if init then
@@ -82,12 +74,14 @@ local doExec = function(init, name, func)
         return false
     end
     log(C.darkGreen, message(timeF(start), titleF(name), "PASS"))
+    --noinspection UnusedDef
     fSuccess = fSuccess + 1
     return true
 end
 
 local mCount = 0
 local runTargetmm = function(target, mou, md)
+    --noinspection UnusedDef
     mCount = mCount + 1
     local file = (string.gsub(ngx.var.project .. target .. "/" .. mou, "/", "."))
     local ok, M = Safe.import(file)
