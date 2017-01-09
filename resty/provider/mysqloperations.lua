@@ -6,7 +6,7 @@ local Nameservice = require("nameservice")
 
 local Conf = loading("resources.application")
 
-local MySqlOperations = {}
+local _M = {_VERSION = "1.0.0"}
 
 local function getOptions()
     return Functionality.defaults(Conf.mysqlc, {
@@ -46,7 +46,7 @@ local function formatQuery(queryId, params)
         end
         local query = require("template").compile(SQL[idx[2]], "UserSql.sql", true)(params)
         local size = (not Functionality.isNumber(params.size) or params.size <= 0) and 1 or params.size
-        if(ngx.ctx[MySqlOperations].OPTIONS.show_sql) then
+        if(ngx.ctx[_M].OPTIONS.show_sql) then
             ngx.log(ngx.INFO, "queryId: ", queryId, ", sql: ", query, ", size: ", size)
         end
         return true, query, size
@@ -56,8 +56,8 @@ end
 
 local function connect()
 
-    if ngx.ctx[MySqlOperations] then
-        return ngx.ctx[MySqlOperations]
+    if ngx.ctx[_M] then
+        return ngx.ctx[_M]
     end
 
     local db, msg = mysql:new()
@@ -90,15 +90,15 @@ local function connect()
     end
 
     db.OPTIONS = options;
-    ngx.ctx[MySqlOperations] = db;
-    return ngx.ctx[MySqlOperations]
+    ngx.ctx[_M] = db;
+    return ngx.ctx[_M]
 end
 
 local function close()
-    if ngx.ctx[MySqlOperations] then
-        local options = ngx.ctx[MySqlOperations].OPTIONS;
-        local ok, error = ngx.ctx[MySqlOperations]:set_keepalive(options.keepalive, options.poolsize);
-        ngx.ctx[MySqlOperations] = nil
+    if ngx.ctx[_M] then
+        local options = ngx.ctx[_M].OPTIONS;
+        local ok, error = ngx.ctx[_M]:set_keepalive(options.keepalive, options.poolsize);
+        ngx.ctx[_M] = nil
         if not ok then
             ngx.log(ngx.ERR, "failed to close mysql, error: ", error)
             return false
@@ -166,7 +166,7 @@ local doExecute = function(func, f, overt, params, flag)
 end
 
 -- 代理函数中执行 SQL, 参数 db 、overt 是代理执行函数决定， queryId 、params 由项目功能业务决定
-MySqlOperations.query = function(db, overt, queryId, params)
+_M.query = function(db, overt, queryId, params)
     if not db then
         ngx.log(ngx.ERR, "failed to connect mysql... ");
         return false, nil;
@@ -193,17 +193,17 @@ MySqlOperations.query = function(db, overt, queryId, params)
 end
 
 -- 直接执行 SQL, overt 是否显示开启事务
-MySqlOperations.exec = function(queryId, params, overt)
+_M.exec = function(queryId, params, overt)
     return doExecute(function(db, f, o, p)
-        return MySqlOperations.query(db, o, f, p)
+        return _M.query(db, o, f, p)
     end, queryId, overt or false, params, false);
 end
 
 -- 代理执行 DB SQL, overt 是否显示开启事务
-MySqlOperations.invoke = function(func, params, overt)
+_M.invoke = function(func, params, overt)
     return doExecute(function(db, f, o, p)
         return f(db, o, p)
     end, func, overt or false, params, true);
 end
 
-return MySqlOperations
+return _M

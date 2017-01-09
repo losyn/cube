@@ -2,6 +2,7 @@
 
 local Environment = require("environment");
 local Functionality = require("functionality")
+local Cjson = require("cjson.safe")
 local Safe = require("safe")
 local Lfs = require("lfs")
 
@@ -21,14 +22,21 @@ local message = function(time, title, msg)
     }
 end
 
-local function formatColor(color)
+local formatColor = function(color)
     return "\x1b[" .. color .. "m"
+end
+
+local formatStr = function(msg)
+    if Functionality.isString(msg) then
+        return msg
+    end
+    return Cjson.encode(msg)
 end
 
 local log = function(color, message)
     ngx.print(formatColor(C.white) .. message.time .. "    \x1b[m")
     ngx.print(formatColor(C.green) .. message.title .. "    \x1b[m")
-    ngx.say(formatColor(color) .. message.msg .. "\x1b[m")
+    ngx.say(formatColor(color) .. formatStr(message.msg) .. "\x1b[m")
     ngx.flush()
 end
 
@@ -87,6 +95,9 @@ local runTargetmm = function(target, mou, md)
     local ok, M = Safe.import(file)
     if not ok then
         return log(C.red, message(default, titleF(mou, true), "can not find test module in the path: " .. target))
+    end
+    if not Functionality.isObject(M) or Functionality.isEmpty(M) then
+        return log(C.yellow, message(default, titleF(mou, true), "can not find test method in module"))
     end
     if not md then
         local start = ngx.now()
@@ -164,6 +175,24 @@ end
 
 _M.log = function(msg)
     log(C.white, message("     ", "     ↓-*-*-*-*-*", msg))
+end
+
+_M.assertEquals = function(expect, actual)
+    if expect ~= actual then
+        error("expect: " .. expect .. " but actual: " .. formatStr(actual))
+    end
+end
+
+_M.assertTrue = function(actual)
+    if not actual then
+        error("expect not (nil or false) but actual: " .. Cjson.encode(actual))
+    end
+end
+
+_M.assertFalse = function(actual)
+    if actual then
+        error("expect nil or false but actual: " .. Cjson.encode(actual))
+    end
 end
 
 _M.run = function(path, mou, md)
