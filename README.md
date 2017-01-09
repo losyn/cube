@@ -33,6 +33,7 @@
         InitNgx.lua      系统启动初始化任务业务代码文件
         
         InitWrk.lua
+ 
 ```
 
 6. 支持 mysql 简单实现了 mybatis 的功能 mysqloperations.lua
@@ -46,6 +47,7 @@
         return MySqlOperations:query(db, overt, "UserSql:sql", params)
     end, {username = "root", size = 10})
     ngx.say(Cjson.encode(res))
+    
 ```
 
 7. 支持 redis 连接池，对 redis 做了封装 redisoperations.lua
@@ -95,8 +97,8 @@
     	fastcgi_intercept_errors on;
     
     	### lua package path conf, product env cache must on 
-    	lua_package_path "$prefix/apps/?.lua;$prefix/resty/?.lua;;";
-        lua_package_cpath "$prefix/apps/?.so;$prefix/resty/?.so;;";
+    	lua_package_path "$prefix/apps/?.lua;$prefix/cresty/?.lua;;";
+        lua_package_cpath "$prefix/apps/?.so;$prefix/cresty/?.so;;";
     
     	lua_code_cache off;
     	lua_shared_dict cube_cache_lock 1m;
@@ -107,13 +109,14 @@
     	### To add your start app service used conf 
     	include ../apps/example/resources/nginx.conf;
     }
+    
 ```  
 
 ##### 安装 cube
 
 1. 源码安装 github 地址： https://github.com/wtclosyn/cube
  
-2. 将 1 中下载的 resty 目录复制到 /YYY/openresty/nginx 目录下，保证与 apps 目录同级
+2. 将 1 中下载的 cresty 目录复制到 /YYY/openresty/nginx 目录下，保证与 apps 目录同级
 
 3. 修改 environment.lua 中的内容符合你自己的项目
 
